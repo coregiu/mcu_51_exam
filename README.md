@@ -1,0 +1,1 @@
+安装python serial: https://www.geeksforgeeks.org/how-to-install-python-serial-package-on-linux/
