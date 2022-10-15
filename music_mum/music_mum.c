@@ -24,14 +24,14 @@ const uchar FREQL[]={0x42,0xC1,0x17,0xB6,0xD0,0xD1,0xB6,
 unsigned int led_times = 0;
 unsigned int flag = 1;
 void change_led(){
-    P0 = flag ? P0 << 1 : P0 >> 1;
-    if (led_times == 8) {
+    if (led_times > 8) {
         flag = !flag;
-        led_times = 0;
         P0 = 0xff;
+        led_times = 0;
     }
+    P0 = flag ? P0 << 1 : P0 >> 1;
     led_times++;
-}   
+}
 
 void delay(uchar t)		  // 延时函数 
 {
