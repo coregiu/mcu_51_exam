@@ -21,6 +21,18 @@ const uchar FREQL[]={0x42,0xC1,0x17,0xB6,0xD0,0xD1,0xB6,
                     0x21,0xE1,0x8C,0xD8,0x68,0xE9,0x5B,0x8F, //1,2,3,4,5,6,7,8,i
                     0xEE,0x44, 0x6B,0xB4,0xF4,0x2D, 
                     0x47,0x77,0xA2,0xB6,0xDA,0xFA,0x16,};
+unsigned int led_times = 0;
+unsigned int flag = 1;
+void change_led(){
+    P0 = flag ? P0 << 1 : P0 >> 1;
+    if (led_times == 8) {
+        flag = !flag;
+        led_times = 0;
+        P0 = 0xff;
+    }
+    led_times++;
+}   
+
 void delay(uchar t)		  // 延时函数 
 {
 	uchar t1;
@@ -29,6 +41,7 @@ void delay(uchar t)		  // 延时函数
 	{
 		for(t2=0;t2<8000;t2++);
 	}
+    change_led();
 	TR0=0;
 }
 void song()				 //  音乐处理函数
