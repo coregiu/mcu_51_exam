@@ -224,6 +224,7 @@ _CY	=	0x00d7
 ;--------------------------------------------------------
 ; overlayable items in internal ram 
 ;--------------------------------------------------------
+	.area	OSEG    (OVR,DATA)
 ;--------------------------------------------------------
 ; Stack segment in internal ram 
 ;--------------------------------------------------------
@@ -307,8 +308,7 @@ __sdcc_program_startup:
 ;Allocation info for local variables in function 'delay'
 ;------------------------------------------------------------
 ;delayTime                 Allocated to registers 
-;i                         Allocated to registers 
-;loop                      Allocated to registers r4 r5 
+;loopi                     Allocated to registers r4 r5 
 ;------------------------------------------------------------
 ;	led_basic.c:3: void delay(unsigned int delayTime) {
 ;	-----------------------------------------
@@ -323,42 +323,33 @@ _delay:
 	ar2 = 0x02
 	ar1 = 0x01
 	ar0 = 0x00
-	mov	__mulint_PARM_2,dpl
-	mov	(__mulint_PARM_2 + 1),dph
-;	led_basic.c:4: unsigned int i = delayTime*10, loop = 10240;
-	mov	dptr,#0x000a
-	lcall	__mulint
 	mov	r6,dpl
 	mov	r7,dph
-	mov	r4,#0x00
-	mov	r5,#0x28
+;	led_basic.c:5: for (delayTime; delayTime > 0; delayTime--){
 00107$:
-;	led_basic.c:5: for (; i>0; i--){
 	mov	a,r6
 	orl	a,r7
 	jz	00109$
-	mov	ar2,r4
-	mov	ar3,r5
-00104$:
-;	led_basic.c:6: for (;loop>0;loop--) {
+;	led_basic.c:6: for (loopi = 0;loopi < 100; loopi++){
+	mov	r4,#0x64
+	mov	r5,#0x00
+00105$:
+	mov	a,r4
+	add	a,#0xff
+	mov	r2,a
+	mov	a,r5
+	addc	a,#0xff
+	mov	r3,a
+	mov	ar4,r2
+	mov	ar5,r3
 	mov	a,r2
 	orl	a,r3
 	jnz	00105$
-	mov	ar4,r2
-	mov	ar5,r3
-	sjmp	00108$
-00105$:
-	dec	r2
-	cjne	r2,#0xff,00135$
-	dec	r3
-00135$:
-	sjmp	00104$
-00108$:
-;	led_basic.c:5: for (; i>0; i--){
+;	led_basic.c:5: for (delayTime; delayTime > 0; delayTime--){
 	dec	r6
-	cjne	r6,#0xff,00136$
+	cjne	r6,#0xff,00132$
 	dec	r7
-00136$:
+00132$:
 	sjmp	00107$
 00109$:
 ;	led_basic.c:10: }
@@ -373,15 +364,17 @@ _delay:
 _main:
 ;	led_basic.c:13: while(1) {
 00102$:
-;	led_basic.c:14: P0 = 0;
-	mov	_P0,#0x00
-;	led_basic.c:15: delay(1000);
-	mov	dptr,#0x03e8
+;	led_basic.c:14: P0_0 = 0;
+;	assignBit
+	clr	_P0_0
+;	led_basic.c:15: delay(500);
+	mov	dptr,#0x01f4
 	lcall	_delay
-;	led_basic.c:16: P0 = 0xff;
-	mov	_P0,#0xff
-;	led_basic.c:17: delay(1000);
-	mov	dptr,#0x03e8
+;	led_basic.c:16: P0_0 = 1;
+;	assignBit
+	setb	_P0_0
+;	led_basic.c:17: delay(500);
+	mov	dptr,#0x01f4
 	lcall	_delay
 ;	led_basic.c:19: }
 	sjmp	00102$
