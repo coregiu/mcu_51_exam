@@ -2,7 +2,7 @@
 ; File Created by SDCC : free open source ANSI-C Compiler
 ; Version 3.8.0 #10562 (Linux)
 ;--------------------------------------------------------
-	.module led_basic
+	.module led_multi
 	.optsdcc -mmcs51 --model-small
 	
 ;--------------------------------------------------------
@@ -106,6 +106,7 @@
 	.globl _DPL
 	.globl _SP
 	.globl _P0
+	.globl _seg
 ;--------------------------------------------------------
 ; special function registers
 ;--------------------------------------------------------
@@ -221,9 +222,12 @@ _CY	=	0x00d7
 ; internal ram data
 ;--------------------------------------------------------
 	.area DSEG    (DATA)
+_seg::
+	.ds 32
 ;--------------------------------------------------------
 ; overlayable items in internal ram 
 ;--------------------------------------------------------
+	.area	OSEG    (OVR,DATA)
 ;--------------------------------------------------------
 ; Stack segment in internal ram 
 ;--------------------------------------------------------
@@ -289,6 +293,44 @@ __interrupt_vect:
 	.globl __mcs51_genXINIT
 	.globl __mcs51_genXRAMCLEAR
 	.globl __mcs51_genRAMCLEAR
+;	led_multi.c:3: unsigned int seg[]={0x7f,0xbf,0xdf,0xef,0xf7,0xfb,0xfd,0xfe,0xff,0xff,0x00,0,0x55,0x55,0xaa,0xaa};//rom允许情况可以无限添加
+	mov	(_seg + 0),#0x7f
+	mov	(_seg + 1),#0x00
+	mov	((_seg + 0x0002) + 0),#0xbf
+	mov	((_seg + 0x0002) + 1),#0x00
+	mov	((_seg + 0x0004) + 0),#0xdf
+	mov	((_seg + 0x0004) + 1),#0x00
+	mov	((_seg + 0x0006) + 0),#0xef
+	mov	((_seg + 0x0006) + 1),#0x00
+	mov	((_seg + 0x0008) + 0),#0xf7
+	mov	((_seg + 0x0008) + 1),#0x00
+	mov	((_seg + 0x000a) + 0),#0xfb
+	mov	((_seg + 0x000a) + 1),#0x00
+	mov	((_seg + 0x000c) + 0),#0xfd
+	mov	((_seg + 0x000c) + 1),#0x00
+	mov	((_seg + 0x000e) + 0),#0xfe
+	mov	((_seg + 0x000e) + 1),#0x00
+	mov	((_seg + 0x0010) + 0),#0xff
+	mov	((_seg + 0x0010) + 1),#0x00
+	mov	((_seg + 0x0012) + 0),#0xff
+	clr	a
+	mov	((_seg + 0x0012) + 1),a
+	mov	((_seg + 0x0014) + 0),a
+	mov	((_seg + 0x0014) + 1),a
+	mov	((_seg + 0x0016) + 0),a
+	mov	((_seg + 0x0016) + 1),a
+	mov	((_seg + 0x0018) + 0),#0x55
+;	1-genFromRTrack replaced	mov	((_seg + 0x0018) + 1),#0x00
+	mov	((_seg + 0x0018) + 1),a
+	mov	((_seg + 0x001a) + 0),#0x55
+;	1-genFromRTrack replaced	mov	((_seg + 0x001a) + 1),#0x00
+	mov	((_seg + 0x001a) + 1),a
+	mov	((_seg + 0x001c) + 0),#0xaa
+;	1-genFromRTrack replaced	mov	((_seg + 0x001c) + 1),#0x00
+	mov	((_seg + 0x001c) + 1),a
+	mov	((_seg + 0x001e) + 0),#0xaa
+;	1-genFromRTrack replaced	mov	((_seg + 0x001e) + 1),#0x00
+	mov	((_seg + 0x001e) + 1),a
 	.area GSFINAL (CODE)
 	ljmp	__sdcc_program_startup
 ;--------------------------------------------------------
@@ -306,11 +348,10 @@ __sdcc_program_startup:
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'delay'
 ;------------------------------------------------------------
-;delayTime                 Allocated to registers 
-;i                         Allocated to registers 
-;loop                      Allocated to registers r4 r5 
+;i                         Allocated to registers r4 r5 
+;loop                      Allocated to registers r6 r7 
 ;------------------------------------------------------------
-;	led_basic.c:3: void delay(unsigned int delayTime) {
+;	led_multi.c:5: void delay() {
 ;	-----------------------------------------
 ;	 function delay
 ;	-----------------------------------------
@@ -323,29 +364,25 @@ _delay:
 	ar2 = 0x02
 	ar1 = 0x01
 	ar0 = 0x00
-	mov	__mulint_PARM_2,dpl
-	mov	(__mulint_PARM_2 + 1),dph
-;	led_basic.c:4: unsigned int i = delayTime*10, loop = 10240;
-	mov	dptr,#0x000a
-	lcall	__mulint
-	mov	r6,dpl
-	mov	r7,dph
+;	led_multi.c:6: unsigned int i = 512, loop = 10240;
+	mov	r6,#0x00
+	mov	r7,#0x28
 	mov	r4,#0x00
-	mov	r5,#0x28
+	mov	r5,#0x02
 00107$:
-;	led_basic.c:5: for (; i>0; i--){
-	mov	a,r6
-	orl	a,r7
+;	led_multi.c:7: for (; i>0; i--){
+	mov	a,r4
+	orl	a,r5
 	jz	00109$
-	mov	ar2,r4
-	mov	ar3,r5
+	mov	ar2,r6
+	mov	ar3,r7
 00104$:
-;	led_basic.c:6: for (;loop>0;loop--) {
+;	led_multi.c:8: for (;loop>0;loop--) {
 	mov	a,r2
 	orl	a,r3
 	jnz	00105$
-	mov	ar4,r2
-	mov	ar5,r3
+	mov	ar6,r2
+	mov	ar7,r3
 	sjmp	00108$
 00105$:
 	dec	r2
@@ -354,37 +391,182 @@ _delay:
 00135$:
 	sjmp	00104$
 00108$:
-;	led_basic.c:5: for (; i>0; i--){
-	dec	r6
-	cjne	r6,#0xff,00136$
-	dec	r7
+;	led_multi.c:7: for (; i>0; i--){
+	dec	r4
+	cjne	r4,#0xff,00136$
+	dec	r5
 00136$:
 	sjmp	00107$
 00109$:
-;	led_basic.c:10: }
+;	led_multi.c:12: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'main'
 ;------------------------------------------------------------
-;	led_basic.c:12: void main(){
+;i                         Allocated to registers r6 r7 
+;------------------------------------------------------------
+;	led_multi.c:14: void main(){
 ;	-----------------------------------------
 ;	 function main
 ;	-----------------------------------------
 _main:
-;	led_basic.c:13: while(1) {
-00102$:
-;	led_basic.c:14: P0 = 0;
-	mov	_P0,#0x00
-;	led_basic.c:15: delay(1000);
-	mov	dptr,#0x03e8
+;	led_multi.c:16: while(1)
+00107$:
+;	led_multi.c:18: P0=0xFE;//第一个LED亮
+	mov	_P0,#0xfe
+;	led_multi.c:19: for(i=0;i<8;i++)
+	mov	r6,#0x00
+	mov	r7,#0x00
+00109$:
+;	led_multi.c:21: delay();
+	push	ar7
+	push	ar6
 	lcall	_delay
-;	led_basic.c:16: P0 = 0xff;
-	mov	_P0,#0xff
-;	led_basic.c:17: delay(1000);
-	mov	dptr,#0x03e8
+	pop	ar6
+	pop	ar7
+;	led_multi.c:22: P0 <<=1;
+	mov	a,_P0
+	mov	r5,a
+	add	a,acc
+	mov	_P0,a
+;	led_multi.c:19: for(i=0;i<8;i++)
+	inc	r6
+	cjne	r6,#0x00,00170$
+	inc	r7
+00170$:
+	clr	c
+	mov	a,r6
+	subb	a,#0x08
+	mov	a,r7
+	subb	a,#0x00
+	jc	00109$
+;	led_multi.c:25: P0=0x7F;//第七个LED亮
+	mov	_P0,#0x7f
+;	led_multi.c:26: for(i=0;i<8;i++)
+	mov	r6,#0x00
+	mov	r7,#0x00
+00111$:
+;	led_multi.c:28: delay();
+	push	ar7
+	push	ar6
 	lcall	_delay
-;	led_basic.c:19: }
-	sjmp	00102$
+	pop	ar6
+	pop	ar7
+;	led_multi.c:29: P0 >>=1;
+	mov	a,_P0
+	clr	c
+	rrc	a
+	mov	_P0,a
+;	led_multi.c:26: for(i=0;i<8;i++)
+	inc	r6
+	cjne	r6,#0x00,00172$
+	inc	r7
+00172$:
+	clr	c
+	mov	a,r6
+	subb	a,#0x08
+	mov	a,r7
+	subb	a,#0x00
+	jc	00111$
+;	led_multi.c:32: P0=0xFE;//第一个LED亮
+	mov	_P0,#0xfe
+;	led_multi.c:33: for(i=0;i<8;i++)
+	mov	r6,#0x00
+	mov	r7,#0x00
+00113$:
+;	led_multi.c:35: delay();
+	push	ar7
+	push	ar6
+	lcall	_delay
+	pop	ar6
+	pop	ar7
+;	led_multi.c:36: P0 <<=1;
+	mov	a,_P0
+	add	a,acc
+	mov	_P0,a
+;	led_multi.c:37: P0 |=0x01;
+	mov	r4,_P0
+	mov	r5,#0x00
+	orl	ar4,#0x01
+	mov	_P0,r4
+;	led_multi.c:33: for(i=0;i<8;i++)
+	inc	r6
+	cjne	r6,#0x00,00174$
+	inc	r7
+00174$:
+	clr	c
+	mov	a,r6
+	subb	a,#0x08
+	mov	a,r7
+	subb	a,#0x00
+	jc	00113$
+;	led_multi.c:40: P0=0x7F;//第七个LED亮
+	mov	_P0,#0x7f
+;	led_multi.c:41: for(i=0;i<8;i++)
+	mov	r6,#0x00
+	mov	r7,#0x00
+00115$:
+;	led_multi.c:43: delay();
+	push	ar7
+	push	ar6
+	lcall	_delay
+	pop	ar6
+	pop	ar7
+;	led_multi.c:44: P0 >>=1;
+	mov	a,_P0
+	clr	c
+	rrc	a
+	mov	_P0,a
+;	led_multi.c:45: P0 |=0x80;
+	mov	r4,_P0
+	mov	r5,#0x00
+	orl	ar4,#0x80
+	mov	_P0,r4
+;	led_multi.c:41: for(i=0;i<8;i++)
+	inc	r6
+	cjne	r6,#0x00,00176$
+	inc	r7
+00176$:
+	clr	c
+	mov	a,r6
+	subb	a,#0x08
+	mov	a,r7
+	subb	a,#0x00
+	jc	00115$
+;	led_multi.c:48: for(i=0;i<16;i++)//查表可以简单的显示各种花样 实用性更强
+	mov	r6,#0x00
+	mov	r7,#0x00
+00117$:
+;	led_multi.c:50: delay();
+	push	ar7
+	push	ar6
+	lcall	_delay
+	pop	ar6
+	pop	ar7
+;	led_multi.c:51: P0=seg[i];
+	mov	a,r6
+	add	a,r6
+	mov	r4,a
+	mov	a,r7
+	rlc	a
+	mov	r5,a
+	mov	a,r4
+	add	a,#_seg
+	mov	r1,a
+	mov	_P0,@r1
+;	led_multi.c:48: for(i=0;i<16;i++)//查表可以简单的显示各种花样 实用性更强
+	inc	r6
+	cjne	r6,#0x00,00178$
+	inc	r7
+00178$:
+	clr	c
+	mov	a,r6
+	subb	a,#0x10
+	mov	a,r7
+	subb	a,#0x00
+	jc	00117$
+;	led_multi.c:54: }
+	ljmp	00107$
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
 	.area XINIT   (CODE)

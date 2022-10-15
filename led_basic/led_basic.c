@@ -1,7 +1,7 @@
 #include <mcs51/8051.h>
 
 void delay(unsigned int delayTime) {
-    unsigned int i = delayTime, loop = 10240;
+    unsigned int i = delayTime*10, loop = 10240;
     for (; i>0; i--){
         for (;loop>0;loop--) {
 

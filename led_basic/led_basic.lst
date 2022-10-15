@@ -224,165 +224,168 @@
                                     224 ;--------------------------------------------------------
                                     225 ; overlayable items in internal ram 
                                     226 ;--------------------------------------------------------
-                                    227 	.area	OSEG    (OVR,DATA)
-                                    228 ;--------------------------------------------------------
-                                    229 ; Stack segment in internal ram 
-                                    230 ;--------------------------------------------------------
-                                    231 	.area	SSEG
-      000000                        232 __start__stack:
-      000000                        233 	.ds	1
-                                    234 
-                                    235 ;--------------------------------------------------------
-                                    236 ; indirectly addressable internal ram data
-                                    237 ;--------------------------------------------------------
-                                    238 	.area ISEG    (DATA)
-                                    239 ;--------------------------------------------------------
-                                    240 ; absolute internal ram data
-                                    241 ;--------------------------------------------------------
+                                    227 ;--------------------------------------------------------
+                                    228 ; Stack segment in internal ram 
+                                    229 ;--------------------------------------------------------
+                                    230 	.area	SSEG
+      000000                        231 __start__stack:
+      000000                        232 	.ds	1
+                                    233 
+                                    234 ;--------------------------------------------------------
+                                    235 ; indirectly addressable internal ram data
+                                    236 ;--------------------------------------------------------
+                                    237 	.area ISEG    (DATA)
+                                    238 ;--------------------------------------------------------
+                                    239 ; absolute internal ram data
+                                    240 ;--------------------------------------------------------
+                                    241 	.area IABS    (ABS,DATA)
                                     242 	.area IABS    (ABS,DATA)
-                                    243 	.area IABS    (ABS,DATA)
-                                    244 ;--------------------------------------------------------
-                                    245 ; bit data
-                                    246 ;--------------------------------------------------------
-                                    247 	.area BSEG    (BIT)
-                                    248 ;--------------------------------------------------------
-                                    249 ; paged external ram data
-                                    250 ;--------------------------------------------------------
-                                    251 	.area PSEG    (PAG,XDATA)
-                                    252 ;--------------------------------------------------------
-                                    253 ; external ram data
-                                    254 ;--------------------------------------------------------
-                                    255 	.area XSEG    (XDATA)
-                                    256 ;--------------------------------------------------------
-                                    257 ; absolute external ram data
-                                    258 ;--------------------------------------------------------
-                                    259 	.area XABS    (ABS,XDATA)
-                                    260 ;--------------------------------------------------------
-                                    261 ; external initialized ram data
-                                    262 ;--------------------------------------------------------
-                                    263 	.area XISEG   (XDATA)
-                                    264 	.area HOME    (CODE)
-                                    265 	.area GSINIT0 (CODE)
-                                    266 	.area GSINIT1 (CODE)
-                                    267 	.area GSINIT2 (CODE)
-                                    268 	.area GSINIT3 (CODE)
-                                    269 	.area GSINIT4 (CODE)
-                                    270 	.area GSINIT5 (CODE)
-                                    271 	.area GSINIT  (CODE)
-                                    272 	.area GSFINAL (CODE)
-                                    273 	.area CSEG    (CODE)
-                                    274 ;--------------------------------------------------------
-                                    275 ; interrupt vector 
-                                    276 ;--------------------------------------------------------
-                                    277 	.area HOME    (CODE)
-      000000                        278 __interrupt_vect:
-      000000 02r00r00         [24]  279 	ljmp	__sdcc_gsinit_startup
-                                    280 ;--------------------------------------------------------
-                                    281 ; global & static initialisations
-                                    282 ;--------------------------------------------------------
-                                    283 	.area HOME    (CODE)
-                                    284 	.area GSINIT  (CODE)
-                                    285 	.area GSFINAL (CODE)
-                                    286 	.area GSINIT  (CODE)
-                                    287 	.globl __sdcc_gsinit_startup
-                                    288 	.globl __sdcc_program_startup
-                                    289 	.globl __start__stack
-                                    290 	.globl __mcs51_genXINIT
-                                    291 	.globl __mcs51_genXRAMCLEAR
-                                    292 	.globl __mcs51_genRAMCLEAR
-                                    293 	.area GSFINAL (CODE)
-      000000 02r00r03         [24]  294 	ljmp	__sdcc_program_startup
-                                    295 ;--------------------------------------------------------
-                                    296 ; Home
-                                    297 ;--------------------------------------------------------
+                                    243 ;--------------------------------------------------------
+                                    244 ; bit data
+                                    245 ;--------------------------------------------------------
+                                    246 	.area BSEG    (BIT)
+                                    247 ;--------------------------------------------------------
+                                    248 ; paged external ram data
+                                    249 ;--------------------------------------------------------
+                                    250 	.area PSEG    (PAG,XDATA)
+                                    251 ;--------------------------------------------------------
+                                    252 ; external ram data
+                                    253 ;--------------------------------------------------------
+                                    254 	.area XSEG    (XDATA)
+                                    255 ;--------------------------------------------------------
+                                    256 ; absolute external ram data
+                                    257 ;--------------------------------------------------------
+                                    258 	.area XABS    (ABS,XDATA)
+                                    259 ;--------------------------------------------------------
+                                    260 ; external initialized ram data
+                                    261 ;--------------------------------------------------------
+                                    262 	.area XISEG   (XDATA)
+                                    263 	.area HOME    (CODE)
+                                    264 	.area GSINIT0 (CODE)
+                                    265 	.area GSINIT1 (CODE)
+                                    266 	.area GSINIT2 (CODE)
+                                    267 	.area GSINIT3 (CODE)
+                                    268 	.area GSINIT4 (CODE)
+                                    269 	.area GSINIT5 (CODE)
+                                    270 	.area GSINIT  (CODE)
+                                    271 	.area GSFINAL (CODE)
+                                    272 	.area CSEG    (CODE)
+                                    273 ;--------------------------------------------------------
+                                    274 ; interrupt vector 
+                                    275 ;--------------------------------------------------------
+                                    276 	.area HOME    (CODE)
+      000000                        277 __interrupt_vect:
+      000000 02r00r00         [24]  278 	ljmp	__sdcc_gsinit_startup
+                                    279 ;--------------------------------------------------------
+                                    280 ; global & static initialisations
+                                    281 ;--------------------------------------------------------
+                                    282 	.area HOME    (CODE)
+                                    283 	.area GSINIT  (CODE)
+                                    284 	.area GSFINAL (CODE)
+                                    285 	.area GSINIT  (CODE)
+                                    286 	.globl __sdcc_gsinit_startup
+                                    287 	.globl __sdcc_program_startup
+                                    288 	.globl __start__stack
+                                    289 	.globl __mcs51_genXINIT
+                                    290 	.globl __mcs51_genXRAMCLEAR
+                                    291 	.globl __mcs51_genRAMCLEAR
+                                    292 	.area GSFINAL (CODE)
+      000000 02r00r03         [24]  293 	ljmp	__sdcc_program_startup
+                                    294 ;--------------------------------------------------------
+                                    295 ; Home
+                                    296 ;--------------------------------------------------------
+                                    297 	.area HOME    (CODE)
                                     298 	.area HOME    (CODE)
-                                    299 	.area HOME    (CODE)
-      000003                        300 __sdcc_program_startup:
-      000003 02r00r29         [24]  301 	ljmp	_main
-                                    302 ;	return from main will return to caller
-                                    303 ;--------------------------------------------------------
-                                    304 ; code
-                                    305 ;--------------------------------------------------------
-                                    306 	.area CSEG    (CODE)
-                                    307 ;------------------------------------------------------------
-                                    308 ;Allocation info for local variables in function 'delay'
-                                    309 ;------------------------------------------------------------
-                                    310 ;delayTime                 Allocated to registers 
-                                    311 ;i                         Allocated to registers r6 r7 
-                                    312 ;loop                      Allocated to registers r4 r5 
-                                    313 ;------------------------------------------------------------
-                                    314 ;	led_basic.c:3: void delay(unsigned int delayTime) {
-                                    315 ;	-----------------------------------------
-                                    316 ;	 function delay
-                                    317 ;	-----------------------------------------
-      000000                        318 _delay:
-                           000007   319 	ar7 = 0x07
-                           000006   320 	ar6 = 0x06
-                           000005   321 	ar5 = 0x05
-                           000004   322 	ar4 = 0x04
-                           000003   323 	ar3 = 0x03
-                           000002   324 	ar2 = 0x02
-                           000001   325 	ar1 = 0x01
-                           000000   326 	ar0 = 0x00
-      000000 AE 82            [24]  327 	mov	r6,dpl
-      000002 AF 83            [24]  328 	mov	r7,dph
-                                    329 ;	led_basic.c:4: unsigned int i = delayTime, loop = 10240;
-      000004 7C 00            [12]  330 	mov	r4,#0x00
-      000006 7D 28            [12]  331 	mov	r5,#0x28
-      000008                        332 00107$:
-                                    333 ;	led_basic.c:5: for (; i>0; i--){
-      000008 EE               [12]  334 	mov	a,r6
-      000009 4F               [12]  335 	orl	a,r7
-      00000A 60 1C            [24]  336 	jz	00109$
-      00000C 8C 02            [24]  337 	mov	ar2,r4
-      00000E 8D 03            [24]  338 	mov	ar3,r5
-      000010                        339 00104$:
-                                    340 ;	led_basic.c:6: for (;loop>0;loop--) {
-      000010 EA               [12]  341 	mov	a,r2
-      000011 4B               [12]  342 	orl	a,r3
-      000012 70 06            [24]  343 	jnz	00105$
-      000014 8A 04            [24]  344 	mov	ar4,r2
-      000016 8B 05            [24]  345 	mov	ar5,r3
-      000018 80 07            [24]  346 	sjmp	00108$
-      00001A                        347 00105$:
-      00001A 1A               [12]  348 	dec	r2
-      00001B BA FF 01         [24]  349 	cjne	r2,#0xff,00135$
-      00001E 1B               [12]  350 	dec	r3
-      00001F                        351 00135$:
-      00001F 80 EF            [24]  352 	sjmp	00104$
-      000021                        353 00108$:
-                                    354 ;	led_basic.c:5: for (; i>0; i--){
-      000021 1E               [12]  355 	dec	r6
-      000022 BE FF 01         [24]  356 	cjne	r6,#0xff,00136$
-      000025 1F               [12]  357 	dec	r7
-      000026                        358 00136$:
-      000026 80 E0            [24]  359 	sjmp	00107$
-      000028                        360 00109$:
-                                    361 ;	led_basic.c:10: }
-      000028 22               [24]  362 	ret
-                                    363 ;------------------------------------------------------------
-                                    364 ;Allocation info for local variables in function 'main'
-                                    365 ;------------------------------------------------------------
-                                    366 ;	led_basic.c:12: void main(){
-                                    367 ;	-----------------------------------------
-                                    368 ;	 function main
-                                    369 ;	-----------------------------------------
-      000029                        370 _main:
-                                    371 ;	led_basic.c:13: while(1) {
-      000029                        372 00102$:
-                                    373 ;	led_basic.c:14: P0 = 0;
-      000029 75 80 00         [24]  374 	mov	_P0,#0x00
-                                    375 ;	led_basic.c:15: delay(1000);
-      00002C 90 03 E8         [24]  376 	mov	dptr,#0x03e8
-      00002F 12r00r00         [24]  377 	lcall	_delay
-                                    378 ;	led_basic.c:16: P0 = 0xff;
-      000032 75 80 FF         [24]  379 	mov	_P0,#0xff
-                                    380 ;	led_basic.c:17: delay(1000);
-      000035 90 03 E8         [24]  381 	mov	dptr,#0x03e8
-      000038 12r00r00         [24]  382 	lcall	_delay
-                                    383 ;	led_basic.c:19: }
-      00003B 80 EC            [24]  384 	sjmp	00102$
-                                    385 	.area CSEG    (CODE)
-                                    386 	.area CONST   (CODE)
-                                    387 	.area XINIT   (CODE)
-                                    388 	.area CABS    (ABS,CODE)
+      000003                        299 __sdcc_program_startup:
+      000003 02r00r35         [24]  300 	ljmp	_main
+                                    301 ;	return from main will return to caller
+                                    302 ;--------------------------------------------------------
+                                    303 ; code
+                                    304 ;--------------------------------------------------------
+                                    305 	.area CSEG    (CODE)
+                                    306 ;------------------------------------------------------------
+                                    307 ;Allocation info for local variables in function 'delay'
+                                    308 ;------------------------------------------------------------
+                                    309 ;delayTime                 Allocated to registers 
+                                    310 ;i                         Allocated to registers 
+                                    311 ;loop                      Allocated to registers r4 r5 
+                                    312 ;------------------------------------------------------------
+                                    313 ;	led_basic.c:3: void delay(unsigned int delayTime) {
+                                    314 ;	-----------------------------------------
+                                    315 ;	 function delay
+                                    316 ;	-----------------------------------------
+      000000                        317 _delay:
+                           000007   318 	ar7 = 0x07
+                           000006   319 	ar6 = 0x06
+                           000005   320 	ar5 = 0x05
+                           000004   321 	ar4 = 0x04
+                           000003   322 	ar3 = 0x03
+                           000002   323 	ar2 = 0x02
+                           000001   324 	ar1 = 0x01
+                           000000   325 	ar0 = 0x00
+      000000 85 82*00         [24]  326 	mov	__mulint_PARM_2,dpl
+      000003 85 83*01         [24]  327 	mov	(__mulint_PARM_2 + 1),dph
+                                    328 ;	led_basic.c:4: unsigned int i = delayTime*10, loop = 10240;
+      000006 90 00 0A         [24]  329 	mov	dptr,#0x000a
+      000009 12r00r00         [24]  330 	lcall	__mulint
+      00000C AE 82            [24]  331 	mov	r6,dpl
+      00000E AF 83            [24]  332 	mov	r7,dph
+      000010 7C 00            [12]  333 	mov	r4,#0x00
+      000012 7D 28            [12]  334 	mov	r5,#0x28
+      000014                        335 00107$:
+                                    336 ;	led_basic.c:5: for (; i>0; i--){
+      000014 EE               [12]  337 	mov	a,r6
+      000015 4F               [12]  338 	orl	a,r7
+      000016 60 1C            [24]  339 	jz	00109$
+      000018 8C 02            [24]  340 	mov	ar2,r4
+      00001A 8D 03            [24]  341 	mov	ar3,r5
+      00001C                        342 00104$:
+                                    343 ;	led_basic.c:6: for (;loop>0;loop--) {
+      00001C EA               [12]  344 	mov	a,r2
+      00001D 4B               [12]  345 	orl	a,r3
+      00001E 70 06            [24]  346 	jnz	00105$
+      000020 8A 04            [24]  347 	mov	ar4,r2
+      000022 8B 05            [24]  348 	mov	ar5,r3
+      000024 80 07            [24]  349 	sjmp	00108$
+      000026                        350 00105$:
+      000026 1A               [12]  351 	dec	r2
+      000027 BA FF 01         [24]  352 	cjne	r2,#0xff,00135$
+      00002A 1B               [12]  353 	dec	r3
+      00002B                        354 00135$:
+      00002B 80 EF            [24]  355 	sjmp	00104$
+      00002D                        356 00108$:
+                                    357 ;	led_basic.c:5: for (; i>0; i--){
+      00002D 1E               [12]  358 	dec	r6
+      00002E BE FF 01         [24]  359 	cjne	r6,#0xff,00136$
+      000031 1F               [12]  360 	dec	r7
+      000032                        361 00136$:
+      000032 80 E0            [24]  362 	sjmp	00107$
+      000034                        363 00109$:
+                                    364 ;	led_basic.c:10: }
+      000034 22               [24]  365 	ret
+                                    366 ;------------------------------------------------------------
+                                    367 ;Allocation info for local variables in function 'main'
+                                    368 ;------------------------------------------------------------
+                                    369 ;	led_basic.c:12: void main(){
+                                    370 ;	-----------------------------------------
+                                    371 ;	 function main
+                                    372 ;	-----------------------------------------
+      000035                        373 _main:
+                                    374 ;	led_basic.c:13: while(1) {
+      000035                        375 00102$:
+                                    376 ;	led_basic.c:14: P0 = 0;
+      000035 75 80 00         [24]  377 	mov	_P0,#0x00
+                                    378 ;	led_basic.c:15: delay(1000);
+      000038 90 03 E8         [24]  379 	mov	dptr,#0x03e8
+      00003B 12r00r00         [24]  380 	lcall	_delay
+                                    381 ;	led_basic.c:16: P0 = 0xff;
+      00003E 75 80 FF         [24]  382 	mov	_P0,#0xff
+                                    383 ;	led_basic.c:17: delay(1000);
+      000041 90 03 E8         [24]  384 	mov	dptr,#0x03e8
+      000044 12r00r00         [24]  385 	lcall	_delay
+                                    386 ;	led_basic.c:19: }
+      000047 80 EC            [24]  387 	sjmp	00102$
+                                    388 	.area CSEG    (CODE)
+                                    389 	.area CONST   (CODE)
+                                    390 	.area XINIT   (CODE)
+                                    391 	.area CABS    (ABS,CODE)

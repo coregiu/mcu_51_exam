@@ -2,7 +2,7 @@
 ; File Created by SDCC : free open source ANSI-C Compiler
 ; Version 3.8.0 #10562 (Linux)
 ;--------------------------------------------------------
-	.module led_basic
+	.module led_loop
 	.optsdcc -mmcs51 --model-small
 	
 ;--------------------------------------------------------
@@ -224,6 +224,7 @@ _CY	=	0x00d7
 ;--------------------------------------------------------
 ; overlayable items in internal ram 
 ;--------------------------------------------------------
+	.area	OSEG    (OVR,DATA)
 ;--------------------------------------------------------
 ; Stack segment in internal ram 
 ;--------------------------------------------------------
@@ -306,11 +307,10 @@ __sdcc_program_startup:
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'delay'
 ;------------------------------------------------------------
-;delayTime                 Allocated to registers 
-;i                         Allocated to registers 
-;loop                      Allocated to registers r4 r5 
+;i                         Allocated to registers r4 r5 
+;loop                      Allocated to registers r6 r7 
 ;------------------------------------------------------------
-;	led_basic.c:3: void delay(unsigned int delayTime) {
+;	led_loop.c:3: void delay() {
 ;	-----------------------------------------
 ;	 function delay
 ;	-----------------------------------------
@@ -323,29 +323,25 @@ _delay:
 	ar2 = 0x02
 	ar1 = 0x01
 	ar0 = 0x00
-	mov	__mulint_PARM_2,dpl
-	mov	(__mulint_PARM_2 + 1),dph
-;	led_basic.c:4: unsigned int i = delayTime*10, loop = 10240;
-	mov	dptr,#0x000a
-	lcall	__mulint
-	mov	r6,dpl
-	mov	r7,dph
+;	led_loop.c:4: unsigned int i = 512, loop = 10240;
+	mov	r6,#0x00
+	mov	r7,#0x28
 	mov	r4,#0x00
-	mov	r5,#0x28
+	mov	r5,#0x02
 00107$:
-;	led_basic.c:5: for (; i>0; i--){
-	mov	a,r6
-	orl	a,r7
+;	led_loop.c:5: for (; i>0; i--){
+	mov	a,r4
+	orl	a,r5
 	jz	00109$
-	mov	ar2,r4
-	mov	ar3,r5
+	mov	ar2,r6
+	mov	ar3,r7
 00104$:
-;	led_basic.c:6: for (;loop>0;loop--) {
+;	led_loop.c:6: for (;loop>0;loop--) {
 	mov	a,r2
 	orl	a,r3
 	jnz	00105$
-	mov	ar4,r2
-	mov	ar5,r3
+	mov	ar6,r2
+	mov	ar7,r3
 	sjmp	00108$
 00105$:
 	dec	r2
@@ -354,37 +350,110 @@ _delay:
 00135$:
 	sjmp	00104$
 00108$:
-;	led_basic.c:5: for (; i>0; i--){
-	dec	r6
-	cjne	r6,#0xff,00136$
-	dec	r7
+;	led_loop.c:5: for (; i>0; i--){
+	dec	r4
+	cjne	r4,#0xff,00136$
+	dec	r5
 00136$:
 	sjmp	00107$
 00109$:
-;	led_basic.c:10: }
+;	led_loop.c:10: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'main'
 ;------------------------------------------------------------
-;	led_basic.c:12: void main(){
+;data1                     Allocated to registers r6 r7 
+;data2                     Allocated to registers r4 r5 
+;num                       Allocated to registers r2 r3 
+;------------------------------------------------------------
+;	led_loop.c:12: void main(){
 ;	-----------------------------------------
 ;	 function main
 ;	-----------------------------------------
 _main:
-;	led_basic.c:13: while(1) {
-00102$:
-;	led_basic.c:14: P0 = 0;
-	mov	_P0,#0x00
-;	led_basic.c:15: delay(1000);
-	mov	dptr,#0x03e8
+;	led_loop.c:14: while(1) {
+00104$:
+;	led_loop.c:15: data1=0xfe;
+	mov	r6,#0xfe
+	mov	r7,#0x00
+;	led_loop.c:16: data2=0x7f;
+	mov	r4,#0x7f
+	mov	r5,#0x00
+;	led_loop.c:17: for(num=0; num<7; num++) {
+	mov	r2,#0x00
+	mov	r3,#0x00
+00106$:
+;	led_loop.c:18: P0=data1;
+;	led_loop.c:19: data1=data1<<1;
+	mov	a,r6
+	mov	_P0,a
+	add	a,acc
+	mov	r6,a
+	mov	a,r7
+	rlc	a
+	mov	r7,a
+;	led_loop.c:20: delay();
+	push	ar7
+	push	ar6
+	push	ar5
+	push	ar4
+	push	ar3
+	push	ar2
 	lcall	_delay
-;	led_basic.c:16: P0 = 0xff;
-	mov	_P0,#0xff
-;	led_basic.c:17: delay(1000);
-	mov	dptr,#0x03e8
+	pop	ar2
+	pop	ar3
+	pop	ar4
+	pop	ar5
+	pop	ar6
+	pop	ar7
+;	led_loop.c:17: for(num=0; num<7; num++) {
+	inc	r2
+	cjne	r2,#0x00,00134$
+	inc	r3
+00134$:
+	clr	c
+	mov	a,r2
+	subb	a,#0x07
+	mov	a,r3
+	subb	a,#0x00
+	jc	00106$
+;	led_loop.c:22: for(num=0; num<7; num++) {
+	mov	r6,#0x00
+	mov	r7,#0x00
+00108$:
+;	led_loop.c:23: P0=data2;
+	mov	_P0,r4
+;	led_loop.c:24: data2=data2>>1;
+	mov	a,r5
+	clr	c
+	rrc	a
+	xch	a,r4
+	rrc	a
+	xch	a,r4
+	mov	r5,a
+;	led_loop.c:25: delay();
+	push	ar7
+	push	ar6
+	push	ar5
+	push	ar4
 	lcall	_delay
-;	led_basic.c:19: }
-	sjmp	00102$
+	pop	ar4
+	pop	ar5
+	pop	ar6
+	pop	ar7
+;	led_loop.c:22: for(num=0; num<7; num++) {
+	inc	r6
+	cjne	r6,#0x00,00136$
+	inc	r7
+00136$:
+	clr	c
+	mov	a,r6
+	subb	a,#0x07
+	mov	a,r7
+	subb	a,#0x00
+	jc	00108$
+;	led_loop.c:28: }
+	sjmp	00104$
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
 	.area XINIT   (CODE)
