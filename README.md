@@ -14,6 +14,10 @@ ubuntu下安装： 从社区下载到本地，社区地址：https://github.com/
 如果执行: stcflash报错： usr/bin/env: ‘python’: No such file or directory
 执行以下命令解决： sudo ln -s /usr/bin/python3 /usr/bin/python
 
+串口调试工具： comtool
+安装： sudo pipe3 install comtool
+运行： sudo comtool
+
 # 开发代码，参照代码目录
 
 ＃ 编译烧录：

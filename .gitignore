@@ -1,5 +1,4 @@
 *.asm
-*.hex
 *.ihx
 *.lst
 *.lk
