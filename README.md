@@ -33,3 +33,7 @@ $sudo stcflash led_basic.hex
 
 此命令会自动寻找USB口发命令。如果有多个USB口，需要指定相应端口。
 $sudo stcflash led_basic.hex --port /dev/ttyUSB0
+
+# 附录
+直流电机驱动： L298N
+https://www.bilibili.com/video/BV1Xt411372X/?spm_id_from=333.337.search-card.all.click&vd_source=2d1a1996f721c2be8579fe3af09c7f00
