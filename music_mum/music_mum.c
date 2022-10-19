@@ -1,8 +1,8 @@
 #include <mcs51/8051.h>
 
 #define uchar unsigned char 
-// #define beep P3_6
-__sbit __at (0xB6) beep ;
+#define beep P3_6
+// __sbit __at (0xB6) beep ;
 uchar timer0h,timer0l,time;
 
 //世上只有妈妈好  数据表
