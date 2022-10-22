@@ -17,12 +17,10 @@ Author：zhulin    Version:1.0     Data:2017/05/30
 #define uint unsigned int
 #define _nop_() __asm NOP __endasm
 
-#define LED    P0_7
-
-#define DATA   P0_2  //D0
-#define CMND   P0_3  //D1
-#define ATT    P0_1  //CS
-#define CLK    P0_4  //CLK
+#define DATA   P1_4  //D0
+#define CMND   P1_5  //D1
+#define ATT    P1_6  //CS
+#define CLK    P1_7  //CLK
 
 /********手柄定义变量*********/
 uchar scan[9] = {0x01, 0x42, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -159,13 +157,52 @@ void main()
 {
 	delayms(500);
 
-	LED = 0;
-
 	uart_init();
 
 	while (1)
 	{
 		Read_PS2();
+		uart_sendata(out[3]);
+		uart_sendata(out[4]);
+
+		switch (out[3])
+		{
+			case 0XEF:
+                P0_0 = 0;
+                break;
+            case 0xBF:
+                P0_1 = 0;
+                break;
+            case 0x7F:
+                P0_2 = 0;
+                break;
+            case 0xDF:
+                P0_3 = 0;
+                break;
+		default:
+			break;
+		}
+
+		switch (out[4])
+		{
+		
+            case 0XEF:
+                P0_4 = 0;
+                break;
+            case 0xBF:
+                P0_5 = 0;
+                break;
+            case 0x7F:
+                P0_6 = 0;
+                break;
+            case 0xDF:
+                P0_7 = 0;
+                break;
+		
+		default:
+			break;
+		}
+		
 		delayms(500);
 	}
 }

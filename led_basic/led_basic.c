@@ -10,6 +10,7 @@ void delayms(unsigned int xms)
 
 void main(){
     while(1) {
+        P0 = 0;
         P0_0 = 0;
         delayms(1000);
         P0_0 = 1;
