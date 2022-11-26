@@ -12,8 +12,8 @@ void time0_init(void) {
     ET0 = 1;
     TR0 = 1;
     TMOD |= 0X01;
-    TH0 = 0XFC;
-    TL0 = 0X66; // 11.0592晶振 1ms值。  12m晶振是0xfc18
+    TH0 = 0X4B;
+    TL0 = 0XEC; // 11.0592晶振 FC66是 1ms值。  12m晶振是0xfc18
 }
 
 void main(void)
@@ -34,10 +34,10 @@ void main(void)
 void time0_exe(void) __interrupt 1 //R0 R1 =  0/1   0/1
 {
     loop_times++;
-    TH0 = 0XFC;
-    TL0 = 0X66;
+    TH0 = 0X4B;
+    TL0 = 0XEC;
 
-    if (loop_times >= 1000) {
+    if (loop_times >= 20) {
     	LED = !LED;
         loop_times = 0;
     }

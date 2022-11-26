@@ -168,16 +168,16 @@ void main()
 		switch (out[3])
 		{
 			case 0XEF:
-                P0_0 = 0;
+                P0_0 = !P0_0;//left top
                 break;
             case 0xBF:
-                P0_1 = 0;
+                P0_1 = !P0_1;//left down
                 break;
             case 0x7F:
-                P0_2 = 0;
+                P0_2 = !P0_2;//left left
                 break;
             case 0xDF:
-                P0_3 = 0;
+                P0_3 = !P0_3;//left right
                 break;
 		default:
 			break;
@@ -187,16 +187,16 @@ void main()
 		{
 		
             case 0XEF:
-                P0_4 = 0;
+                P0_4 = !P0_4;//right top
                 break;
             case 0xBF:
-                P0_5 = 0;
+                P0_5 = !P0_5;//right down
                 break;
             case 0x7F:
-                P0_6 = 0;
+                P0_6 = !P0_6;//right left
                 break;
             case 0xDF:
-                P0_7 = 0;
+                P0_7 = !P0_7;//right right
                 break;
 		
 		default:

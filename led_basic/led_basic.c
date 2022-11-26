@@ -9,11 +9,13 @@ void delayms(unsigned int xms)
 }
 
 void main(){
+    P2_0 = 1;
+    P2_1 = 1;
+    P2_2 = 0;
+
+    P2_3 = 1;
+    P2_4 = 1;
+    P2_5 = 0;
     while(1) {
-        P0 = 0;
-        P0_0 = 0;
-        delayms(1000);
-        P0_0 = 1;
-        delayms(1000);
     }
 }
