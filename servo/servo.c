@@ -4,13 +4,12 @@
 ***************************************************************************/
 #include <mcs51/8051.h>
 #include <stdio.h>
-#include <math.h>
 typedef unsigned char uchar;
 typedef unsigned int uint;
 
 #define _nop_() __asm NOP __endasm
-#define scl P3_6 //时钟输入线
-#define sda P3_7 //数据输入/输出端
+#define scl P1_5 //时钟输入线
+#define sda P1_4 //数据输入/输出端
 
 #define PCA9685_adrr 0x80 //  1+A5+A4+A3+A2+A1+A0+w/r
 #define PCA9685_SUBADR1 0x2
@@ -46,7 +45,7 @@ void PCA9685_write(uchar address, uchar date);
 void reset(void);
 void setPWMFreq(float freq);
 void servo_control(uchar num, uchar angle);
-extern float floor(float);
+float floor(float x);
 
 /**********************函数的声明*********************************/
 /*---------------------------------------------------------------
@@ -59,6 +58,20 @@ void delayms(uint z)
         for (y = 148; y > 0; y--)
             ;
 }
+float floor(float x)
+{
+
+   float y=x;
+
+    if( (*( ( (int *) &y)+1) & 0x80000000)  != 0) //或者if(x<0)
+
+        return (float)((int)x)-1;
+
+    else
+
+        return (float)((int)x);
+}
+
 /*---------------------------------------------------------------
                                                                         IIC总线所需的通用函数
 ----------------------------------------------------------------*/
