@@ -11,16 +11,14 @@ Author：zhulin    Version:1.0     Data:2017/05/30
 
 **********************************************************/
 
-#define Fosc 11059200 //晶振频率
-
 #define uchar unsigned char
 #define uint unsigned int
 #define _nop_() __asm NOP __endasm
 
-#define DATA   P1_4  //D0
-#define CMND   P1_5  //D1
-#define ATT    P1_6  //CS
-#define CLK    P1_7  //CLK
+#define DATA   P1_0  //D0
+#define CMND   P1_1  //D1
+#define ATT    P1_2  //CS
+#define CLK    P1_3  //CLK
 
 /********手柄定义变量*********/
 uchar scan[9] = {0x01, 0x42, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -95,9 +93,9 @@ void psin(uchar command) //手柄发送子程序
 		_nop_();
 		_nop_();
 		CLK = 0;
-		delay(10);
-		CLK = 1;
 		delay(3);
+		CLK = 1;
+		delay(1);
 	}
 	CMND = 1;
 }
@@ -116,7 +114,7 @@ uchar scanout(uchar command) //手柄发送子程序
 		_nop_();
 		_nop_();
 		CLK = 0;
-		delay(10);
+		// delay(3);
 		if (DATA)
 			res = res + j;
 		j = j << 1;
@@ -156,28 +154,30 @@ void Read_PS2(void) //手柄读取程序
 void main()
 {
 	delayms(500);
-
+	P0_0 = 0;
 	uart_init();
 
 	while (1)
 	{
 		Read_PS2();
-		uart_sendata(out[3]);
-		uart_sendata(out[4]);
 
 		switch (out[3])
 		{
 			case 0XEF:
                 P0_0 = !P0_0;//left top
+		uart_sendata(out[3]);
                 break;
             case 0xBF:
                 P0_1 = !P0_1;//left down
+		uart_sendata(out[3]);
                 break;
             case 0x7F:
                 P0_2 = !P0_2;//left left
+		uart_sendata(out[3]);
                 break;
             case 0xDF:
                 P0_3 = !P0_3;//left right
+		uart_sendata(out[3]);
                 break;
 		default:
 			break;
@@ -188,22 +188,26 @@ void main()
 		
             case 0XEF:
                 P0_4 = !P0_4;//right top
+		uart_sendata(out[4]);
                 break;
             case 0xBF:
                 P0_5 = !P0_5;//right down
+		uart_sendata(out[4]);
                 break;
             case 0x7F:
                 P0_6 = !P0_6;//right left
+		uart_sendata(out[4]);
                 break;
             case 0xDF:
                 P0_7 = !P0_7;//right right
+		uart_sendata(out[4]);
                 break;
 		
 		default:
 			break;
 		}
 		
-		delayms(500);
+		delayms(200);
 	}
 }
 
