@@ -275,7 +275,9 @@ void servo_control(uchar num, uchar angle)
 ----------------------------------------------------------------*/
 void main()
 {
-    uint i;
+    EA=1;          //全局中断开
+	EX0=1;         //外部中断0开
+	IT0=0;         //电平触发
     init();
     begin();
     setPWMFreq(50);
@@ -285,10 +287,74 @@ void main()
     //setPWM(num,0,239);;;;当然也可以利用SERVO000和SERVO180计算
     while (1)
     {
-        for (i = 0; i <= 180; i++)
+        delayms(10);
+        if (P3_2 == 0) {
+            P0_0 = !P0_0;
+            for (int i = 0; i < 180; i++)
+            {
+                servo_control(1, i);
+                delayms(10);
+            }
+        }
+        if (P3_3 == 0) {
+            P0_1 = !P0_1;
+            servo_control(1, 0);//right
+        }
+        if (P3_4 == 0) {
+            P0_2 = !P0_2;
+            servo_control(1, 90);//right
+        }
+        if (P3_5 == 0) {
+            P0_3 = !P0_3;
+            servo_control(1, 176);//right
+        }
+        // for (int i = 0; i < 180; i++)
+        // {
+        //     servo_control(1, i);
+        //     delayms(10);
+        // }
+        // for (uint i = 90; i < 180; i++)
+        // {
+        //     servo_control(1, i);
+        //     delayms(10);
+        // }
+        // for (uint i = 0; i < 90; i++)
+        // {
+        //     servo_control(1, 90 - i);
+        //     delayms(10);
+        // }
+        
+
+        // servo_control(1, 0);//right
+        // delayms(2000);
+        // servo_control(1, 88);//middle
+        // delayms(2000);
+        // servo_control(1, 179);//left
+        // delayms(2000);
+    }
+}
+
+void Key_INT_0(void) __interrupt 0 //R0 R1 =  0/1   0/1
+{
+    delayms(10);
+    if (P3_2 == 0) {
+        P0_0 = !P0_0;
+        for (int i = 0; i < 180; i++)
         {
             servo_control(1, i);
             delayms(10);
         }
+    }
+    if (P3_3 == 0) {
+        P0_1 = !P0_1;
+        servo_control(1, 0);//right
+    }
+    if (P3_4 == 0) {
+        P0_2 = !P0_2;
+        servo_control(1, 90);//right
+    }
+    if (P3_5 == 0) {
+        P0_3 = !P0_3;
+        servo_control(1, 179);//right
     }
 }
