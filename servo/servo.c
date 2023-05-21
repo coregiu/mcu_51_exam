@@ -8,8 +8,8 @@ typedef unsigned char uchar;
 typedef unsigned int uint;
 
 #define _nop_() __asm NOP __endasm
-#define scl P1_5 //时钟输入线
-#define sda P1_4 //数据输入/输出端
+#define scl P1_1 //时钟输入线
+#define sda P1_0 //数据输入/输出端
 
 #define PCA9685_adrr 0x80 //  1+A5+A4+A3+A2+A1+A0+w/r
 #define PCA9685_SUBADR1 0x2
@@ -34,18 +34,18 @@ typedef unsigned int uint;
 
 void delayms(uint z);
 void delayus();
-void init();
-void start();
-void stop();
-void ACK();
+void init_pca9685();
+void init_iic();
+void start_iic();
+void stop_iic();
+void ack_iic();
 void write_byte(uchar byte);
-uchar PCA9685_read(uchar address);
+uchar pca9685_read(uchar address);
 uchar read_byte();
-void PCA9685_write(uchar address, uchar date);
-void reset(void);
-void setPWMFreq(float freq);
+void pca9685_write(uchar address, uchar date);
+void reset_pca9685(void);
+void set_pwm_freq(float freq);
 void servo_control(uchar num, uchar angle);
-float floor(float x);
 
 /**********************函数的声明*********************************/
 /*---------------------------------------------------------------
@@ -57,19 +57,6 @@ void delayms(uint z)
     for (x = z; x > 0; x--)
         for (y = 148; y > 0; y--)
             ;
-}
-float floor(float x)
-{
-
-   float y=x;
-
-    if( (*( ( (int *) &y)+1) & 0x80000000)  != 0) //或者if(x<0)
-
-        return (float)((int)x)-1;
-
-    else
-
-        return (float)((int)x);
 }
 
 /*---------------------------------------------------------------
@@ -89,7 +76,7 @@ void delayus()
 /*---------------------------------------------------------------
                  IIC总线初始化函数 
 ----------------------------------------------------------------*/
-void init()
+void init_iic()
 {
     sda = 1; //sda scl使用前总是被拉高
     delayus();
@@ -99,7 +86,7 @@ void init()
 /*---------------------------------------------------------------
                  IIC总线启动信号函数
 ----------------------------------------------------------------*/
-void start()
+void start_iic()
 {
     sda = 1;
     delayus();
@@ -113,7 +100,7 @@ void start()
 /*---------------------------------------------------------------
                  IIC总线停止信号函数
 ----------------------------------------------------------------*/
-void stop()
+void stop_iic()
 {
     sda = 0;
     delayus();
@@ -125,7 +112,7 @@ void stop()
 /*---------------------------------------------------------------
                  IIC总线应答信号函数
 ----------------------------------------------------------------*/
-void ACK()
+void ack_iic()
 {
     uchar i = 0;
     scl = 1;
@@ -191,51 +178,47 @@ uchar read_byte()
 /*---------------------------------------------------------------
                 向PCA9685里写地址，数据
 ----------------------------------------------------------------*/
-void PCA9685_write(uchar address, uchar date)
+void pca9685_write(uchar address, uchar date)
 {
-    start();
+    start_iic();
     write_byte(PCA9685_adrr); //PCA9685的片选地址
-    ACK();
+    ack_iic();
     write_byte(address); //写地址控制字节
-    ACK();
+    ack_iic();
     write_byte(date); //写数据
-    ACK();
-    stop();
+    ack_iic();
+    stop_iic();
 }
 /*---------------------------------------------------------------
             从PCA9685里的地址值中读数据(有返回值)
 ----------------------------------------------------------------*/
-uchar PCA9685_read(uchar address)
+uchar pca9685_read(uchar address)
 {
     uchar date;
-    start();
+    start_iic();
     write_byte(PCA9685_adrr); //PCA9685的片选地址
-    ACK();
+    ack_iic();
     write_byte(address);
-    ACK();
-    start();
+    ack_iic();
+    start_iic();
     write_byte(PCA9685_adrr | 0x01); //地址的第八位控制数据流方向，就是写或读
-    ACK();
+    ack_iic();
     date = read_byte();
-    stop();
+    stop_iic();
     return date;
 }
 /*---------------------------------------------------------------
                         PCA9685复位
 ----------------------------------------------------------------*/
-void reset(void)
+void reset_pca9685(void)
 {
-    PCA9685_write(PCA9685_MODE1, 0x0);
+    pca9685_write(PCA9685_MODE1, 0x0);
 }
 
-void begin(void)
-{
-    reset();
-}
 /*---------------------------------------------------------------
                                         PCA9685修改频率函数
 ----------------------------------------------------------------*/
-void setPWMFreq(float freq)
+void set_pwm_freq(float freq)
 {
     uint prescale, oldmode, newmode;
     float prescaleval;
@@ -244,15 +227,15 @@ void setPWMFreq(float freq)
     prescaleval /= 4096;
     prescaleval /= freq;
     prescaleval -= 1;
-    prescale = floor(prescaleval + 0.5);
+    prescale = (uint)(prescaleval + 0.5);
 
-    oldmode = PCA9685_read(PCA9685_MODE1);
+    oldmode = pca9685_read(PCA9685_MODE1);
     newmode = (oldmode & 0x7F) | 0x10;         // sleep
-    PCA9685_write(PCA9685_MODE1, newmode);     // go to sleep
-    PCA9685_write(PCA9685_PRESCALE, prescale); // set the prescaler
-    PCA9685_write(PCA9685_MODE1, oldmode);
+    pca9685_write(PCA9685_MODE1, newmode);     // go to sleep
+    pca9685_write(PCA9685_PRESCALE, prescale); // set the prescaler
+    pca9685_write(PCA9685_MODE1, oldmode);
     delayms(2);
-    PCA9685_write(PCA9685_MODE1, oldmode | 0xa1);
+    pca9685_write(PCA9685_MODE1, oldmode | 0xa1);
 }
 /*---------------------------------------------------------------
                                 PCA9685修改角度函数
@@ -264,10 +247,17 @@ off/4096的值就是PWM的占空比。
 void servo_control(uchar num, uchar angle)
 {
     uint off = 102.4 + 2.275555556 * angle;
-    PCA9685_write(LED0_ON_L + 4 * num, 0);
-    PCA9685_write(LED0_ON_H + 4 * num, 0);
-    PCA9685_write(LED0_OFF_L + 4 * num, off);
-    PCA9685_write(LED0_OFF_H + 4 * num, off >> 8);
+    pca9685_write(LED0_ON_L + 4 * num, 0);
+    pca9685_write(LED0_ON_H + 4 * num, 0);
+    pca9685_write(LED0_OFF_L + 4 * num, off);
+    pca9685_write(LED0_OFF_H + 4 * num, off >> 8);
+}
+
+void init_pca9685()
+{
+    init_iic();
+    reset_pca9685();
+    set_pwm_freq(50);
 }
 
 /*---------------------------------------------------------------
@@ -275,12 +265,7 @@ void servo_control(uchar num, uchar angle)
 ----------------------------------------------------------------*/
 void main()
 {
-    EA=1;          //全局中断开
-	EX0=1;         //外部中断0开
-	IT0=0;         //电平触发
-    init();
-    begin();
-    setPWMFreq(50);
+    init_pca9685();
     //例如要求舵机转到x度，这么算，
     //x度对应的脉宽=0.5ms+(x/180)*(2.5ms-0.5ms)=1.1666ms
     //利用占空比=1.1666ms/20ms=off/4096,off=239,50hz对应周期20ms
