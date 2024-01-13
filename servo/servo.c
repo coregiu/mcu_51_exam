@@ -74,7 +74,7 @@ void delayus()
     _nop_();
 }
 /*---------------------------------------------------------------
-                 IIC总线初始化函数 
+                 IIC总线初始化函数
 ----------------------------------------------------------------*/
 void init_iic()
 {
@@ -270,6 +270,12 @@ void main()
     //x度对应的脉宽=0.5ms+(x/180)*(2.5ms-0.5ms)=1.1666ms
     //利用占空比=1.1666ms/20ms=off/4096,off=239,50hz对应周期20ms
     //setPWM(num,0,239);;;;当然也可以利用SERVO000和SERVO180计算
+    servo_control(0, 90);
+    servo_control(3, 30);
+    servo_control(4, 160);
+    servo_control(7, 160);
+    servo_control(8, 90);
+    servo_control(11, 179);
     while (1)
     {
         delayms(10);
@@ -308,7 +314,7 @@ void main()
         //     servo_control(1, 90 - i);
         //     delayms(10);
         // }
-        
+
 
         // servo_control(1, 0);//right
         // delayms(2000);
